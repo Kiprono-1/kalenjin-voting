@@ -17,4 +17,20 @@ if (isConfigValid) {
     console.warn('Supabase credentials missing or invalid. Please update your .env file with live credentials.');
 }
 
-export const supabase = supabaseInstance;
+// Export a safety proxy to prevent crashing if config is missing
+export const supabase = supabaseInstance || new Proxy({}, {
+    get: (target, prop) => {
+        if (prop === 'auth') {
+            return {
+                getUser: () => Promise.resolve({ data: { user: null }, error: null }),
+                signInWithPassword: () => Promise.reject(new Error('Supabase not configured')),
+                signInWithOAuth: () => Promise.reject(new Error('Supabase not configured')),
+                onAuthStateChange: () => ({ data: { subscription: { unsubscribe: () => { } } } })
+            };
+        }
+        return () => ({
+            from: () => { throw new Error('Supabase not configured. Check your .env file.'); },
+            select: () => { throw new Error('Supabase not configured. Check your .env file.'); }
+        });
+    }
+});

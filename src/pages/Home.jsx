@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
-import { Loader2, Users, Award } from 'lucide-react';
+import { Loader2, Users, Award, TrendingUp } from 'lucide-react';
 
 import HeroSection from '@/components/voting/HeroSection';
 import CategoryTabs from '@/components/voting/CategoryTabs';
