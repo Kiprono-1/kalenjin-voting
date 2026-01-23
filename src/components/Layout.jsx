@@ -13,6 +13,7 @@ import {
     X,
     User,
     Mail,
+    ShieldCheck,
     Facebook,
     Twitter,
     Instagram,
@@ -132,13 +133,22 @@ export default function Layout({ children, currentPageName }) {
                                         <div className="px-2 py-1.5 text-xs text-slate-500 font-medium border-b mb-1">
                                             {currentUser.email}
                                         </div>
+                                        {currentUser?.role === 'admin' && (
+                                            <Link to={createPageUrl('Admin')}>
+                                                <DropdownMenuItem className="cursor-pointer font-bold text-amber-600 focus:text-amber-700 focus:bg-amber-50">
+                                                    <ShieldCheck className="w-4 h-4 mr-2" />
+                                                    Admin Dashboard
+                                                </DropdownMenuItem>
+                                            </Link>
+                                        )}
                                         <Link to={createPageUrl('Contact')}>
                                             <DropdownMenuItem className="cursor-pointer">
                                                 <Mail className="w-4 h-4 mr-2" />
                                                 Contact Us
                                             </DropdownMenuItem>
                                         </Link>
-                                        <DropdownMenuItem onClick={handleLogout} className="text-red-600 cursor-pointer focus:text-red-600 focus:bg-red-50">
+                                        <div className="h-px bg-slate-100 my-1" />
+                                        <DropdownMenuItem onClick={handleLogout} className="text-red-600 cursor-pointer font-bold focus:text-red-700 focus:bg-red-50">
                                             <LogOut className="w-4 h-4 mr-2" />
                                             Sign Out
                                         </DropdownMenuItem>
@@ -195,10 +205,21 @@ export default function Layout({ children, currentPageName }) {
                                     </Link>
                                 ))}
                                 <Link to={createPageUrl('Contact')} onClick={() => setMobileMenuOpen(false)}>
-                                    <Button className="w-full bg-slate-900 text-white mt-4">
+                                    <Button variant="outline" className="w-full mt-4 border-slate-200">
                                         Contact Support
                                     </Button>
                                 </Link>
+
+                                {currentUser && (
+                                    <Button
+                                        onClick={handleLogout}
+                                        variant="ghost"
+                                        className="w-full justify-start text-red-600 hover:text-red-700 hover:bg-red-50 mt-2 font-bold"
+                                    >
+                                        <LogOut className="w-4 h-4 mr-2" />
+                                        SIGN OUT
+                                    </Button>
+                                )}
                             </div>
                         </div>
                     )}

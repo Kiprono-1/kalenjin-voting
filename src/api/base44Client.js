@@ -33,11 +33,11 @@ export const base44 = {
             if (error) throw error;
             return data;
         },
-        verifyOtp: async (email, token, type = 'email') => {
+        verifyOtp: async (email, token, type = 'magiclink') => {
             const { data, error } = await supabase.auth.verifyOtp({
                 email,
                 token,
-                type // 'email' for login, 'recovery' for password reset
+                type // 'magiclink' for login OTP, 'recovery' for password reset OTP
             });
             if (error) throw error;
             return data.user;
