@@ -40,7 +40,6 @@ export default function Layout({ children, currentPageName }) {
         { name: 'Awards', label: 'AWARDS', path: 'Awards' },
         { name: 'Foundation', label: 'FOUNDATION', path: 'Foundation' },
         { name: 'Apply', label: 'APPLY NOW', path: 'Apply' },
-        { name: 'Results', label: 'LIVE RESULTS', path: 'Results' },
     ];
 
     const adminItems = [

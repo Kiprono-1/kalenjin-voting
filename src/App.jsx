@@ -25,6 +25,11 @@ function App() {
             <Home />
           </Layout>
         } />
+        <Route path="/results" element={
+          <Layout currentPageName="Results">
+            <Results />
+          </Layout>
+        } />
 
         <Route path="/admin" element={
           <Layout currentPageName="Admin">
