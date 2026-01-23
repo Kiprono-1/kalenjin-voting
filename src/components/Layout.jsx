@@ -56,7 +56,12 @@ export default function Layout({ children, currentPageName }) {
                     <div className="flex items-center justify-between h-16 md:h-20">
                         {/* Logo */}
                         <Link to={createPageUrl('Home')} className="flex items-center gap-2">
-                            <img src="/logo.png" alt="Kalenjin Music Festival" className="h-12 w-auto md:h-16 object-contain" />
+                            <div className="flex flex-col">
+                                <span className="text-lg md:text-xl font-bold leading-none hidden sm:block">
+                                    <span className="text-amber-500">Kalenjin</span>
+                                </span>
+                                <span className="text-sm md:text-lg font-bold text-red-600 leading-none hidden sm:block">Music Festival</span>
+                            </div>
 
                         </Link>
 
