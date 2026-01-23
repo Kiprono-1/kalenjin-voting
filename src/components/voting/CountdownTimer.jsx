@@ -4,8 +4,8 @@ import { Calendar, Clock, Lock, PlayCircle, CheckCircle } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 export default function CountdownTimer({
-    startDate = "2026-01-22T10:00:00+03:00",
-    endDate = "2026-01-23T10:00:00+03:00"
+    startDate = "2026-01-23T10:00:00+03:00",
+    endDate = "2026-01-24T10:00:00+03:00"
 }) {
     const [phase, setPhase] = useState('BEFORE_START'); // BEFORE_START, DURING_VOTING, ENDED
     const [timeLeft, setTimeLeft] = useState({
