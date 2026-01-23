@@ -177,9 +177,19 @@ export const base44 = {
                 return data;
             },
             update: async (id, artistData) => {
+                // Sanitize: Remove joined data and non-updatable fields 
+                // that would cause "column not found" errors in Supabase
+                const {
+                    categories,
+                    category,
+                    id: _id,
+                    created_at,
+                    ...updatableData
+                } = artistData;
+
                 const { data, error } = await supabase
                     .from('artists')
-                    .update(artistData)
+                    .update(updatableData)
                     .eq('id', id)
                     .select()
                     .single();
