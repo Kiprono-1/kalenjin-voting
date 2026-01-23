@@ -19,8 +19,8 @@ export default function Home() {
   const [isVotingLive, setIsVotingLive] = useState(false);
   const queryClient = useQueryClient();
 
-  const START_DATE = "2026-01-22T10:00:00+03:00";
-  const END_DATE = "2026-01-22T18:00:00+03:00";
+  const START_DATE = "2026-01-23T08:00:00+03:00";
+  const END_DATE = "2026-02-15T23:59:59+03:00";
 
   useEffect(() => {
     base44.auth.me()
