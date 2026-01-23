@@ -40,7 +40,8 @@ export const supabase = supabaseInstance || {
         signUp: () => Promise.reject(new Error('Supabase not configured')),
         onAuthStateChange: () => ({ data: { subscription: { unsubscribe: () => { } } } }),
         signOut: () => Promise.resolve({ error: null }),
-        getSession: () => Promise.resolve({ data: { session: null }, error: null })
+        getSession: () => Promise.resolve({ data: { session: null }, error: null }),
+        signInWithOAuth: () => Promise.reject(new Error('Supabase not configured'))
     },
     from: () => createChainProxy()
 };

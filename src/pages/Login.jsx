@@ -142,6 +142,16 @@ const Login = () => {
     }
   }
 
+  const handleGoogleLogin = async () => {
+    setLoading(true);
+    try {
+      await base44.auth.loginWithGoogle();
+    } catch (err) {
+      toast.error(err.message || "Google sign-in failed");
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="h-full grid grid-cols-1 lg:grid-cols-2">
       {/* Left Side: Branding */}
@@ -248,6 +258,21 @@ const Login = () => {
                     </form>
                   ) : !loginData.otpSent ? (
                     <form onSubmit={handleLoginInitial} className="space-y-4">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        className="w-full flex items-center justify-center gap-2 h-11 border-slate-300 hover:bg-slate-50"
+                        onClick={handleGoogleLogin}
+                        disabled={loading}
+                      >
+                        Sign in with Google
+                      </Button>
+
+                      <div className="relative my-6">
+                        <div className="absolute inset-0 flex items-center"><span className="w-full border-t border-slate-200" /></div>
+                        <div className="relative flex justify-center text-xs uppercase"><span className="bg-slate-50 px-2 text-slate-500 font-medium">Or continue with email</span></div>
+                      </div>
+
                       <div className="space-y-2">
                         <Label htmlFor="email">Email Address</Label>
                         <Input

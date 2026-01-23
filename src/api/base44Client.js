@@ -23,6 +23,16 @@ export const base44 = {
 
             return data.user;
         },
+        loginWithGoogle: async () => {
+            const { data, error } = await supabase.auth.signInWithOAuth({
+                provider: 'google',
+                options: {
+                    redirectTo: window.location.origin,
+                }
+            });
+            if (error) throw error;
+            return data;
+        },
         verifyOtp: async (email, token) => {
             const { data, error } = await supabase.auth.verifyOtp({
                 email,
