@@ -12,7 +12,12 @@ import {
     Menu,
     X,
     User,
-    Mail
+    Mail,
+    Facebook,
+    Twitter,
+    Instagram,
+    Youtube,
+    Phone
 } from 'lucide-react';
 import {
     DropdownMenu,
@@ -196,28 +201,108 @@ export default function Layout({ children, currentPageName }) {
                 {children}
 
                 {/* Footer (Inside scroll area) */}
-                <footer className="bg-slate-900 text-white py-12 mt-auto border-t border-slate-800">
-                    <div className="max-w-7xl mx-auto px-4 flex flex-col items-center text-center">
-                        <div className="flex items-center gap-3 mb-6">
-                            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-amber-500 to-red-600 flex items-center justify-center">
-                                <Music4 className="w-5 h-5 text-white" />
+                {/* Enhanced Footer */}
+                <footer className="bg-slate-900 text-slate-300 py-12 md:py-16 mt-auto border-t border-slate-800">
+                    <div className="max-w-7xl mx-auto px-4">
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 lg:gap-8">
+                            {/* Column 1: Brand */}
+                            <div className="flex flex-col gap-6">
+                                <div className="flex items-center gap-3">
+                                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-amber-500 to-red-600 flex items-center justify-center shadow-lg shadow-amber-900/20">
+                                        <Music4 className="w-5 h-5 text-white" />
+                                    </div>
+                                    <div className="flex flex-col">
+                                        <span className="text-lg font-bold text-white leading-none tracking-tight">Kalenjin</span>
+                                        <span className="text-sm font-bold text-red-500 leading-none tracking-tight">Music Festival</span>
+                                    </div>
+                                </div>
+                                <p className="text-sm leading-relaxed text-slate-400">
+                                    Celebrating the rich musical heritage and artistic excellence of the Kalenjin community. Rooted in tradition, rising in rhythm.
+                                </p>
                             </div>
-                            <div className="text-left">
-                                <div className="font-bold text-lg leading-none">Kalenjin Music Festival</div>
-                                <div className="text-slate-400 text-xs">Celebrating Culture</div>
+
+                            {/* Column 2: Quick Links */}
+                            <div className="flex flex-col gap-6">
+                                <h3 className="text-white font-bold text-sm uppercase tracking-wider">Quick Links</h3>
+                                <ul className="flex flex-col gap-4">
+                                    {[
+                                        { label: 'Home', path: 'Home' },
+                                        { label: 'About KMF', path: 'About' },
+                                        { label: 'Foundation', path: 'Foundation' },
+                                        { label: 'Apply Now', path: 'Apply' },
+                                        { label: 'Live Results', path: 'Results' },
+                                    ].map((link) => (
+                                        <li key={link.path}>
+                                            <Link
+                                                to={createPageUrl(link.path)}
+                                                className="text-sm hover:text-amber-500 transition-colors flex items-center gap-2 group"
+                                            >
+                                                <span className="w-1.5 h-1.5 rounded-full bg-slate-700 group-hover:bg-amber-500 transition-colors" />
+                                                {link.label}
+                                            </Link>
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+
+                            {/* Column 3: Contact */}
+                            <div className="flex flex-col gap-6">
+                                <h3 className="text-white font-bold text-sm uppercase tracking-wider">Contact Us</h3>
+                                <ul className="flex flex-col gap-4">
+                                    <li className="flex items-start gap-3 text-sm">
+                                        <div className="w-5 h-5 rounded-full border border-amber-500/30 flex items-center justify-center shrink-0">
+                                            <div className="w-1.5 h-1.5 rounded-full bg-amber-500" />
+                                        </div>
+                                        <span>Rupa's Mall, Eldoret, Kenya</span>
+                                    </li>
+                                    <li className="flex items-start gap-3 text-sm">
+                                        <Mail className="w-5 h-5 text-amber-500 shrink-0" />
+                                        <a href="mailto:support@kalenjinmusicfestival.com" className="hover:text-white transition-colors cursor-pointer">support@kalenjinmusicfestival.com</a>
+                                    </li>
+                                    <li className="flex items-start gap-3 text-sm">
+                                        <div className="w-5 h-5 rounded-full border border-amber-500/30 flex items-center justify-center shrink-0">
+                                            <Phone className="w-3 h-3 text-amber-500" />
+                                        </div>
+                                        <a href="tel:0757915440" className="hover:text-white transition-colors cursor-pointer">0757915440</a>
+                                    </li>
+                                </ul>
+                            </div>
+
+                            {/* Column 4: Newsletter/Social */}
+                            <div className="flex flex-col gap-6">
+                                <h3 className="text-white font-bold text-sm uppercase tracking-wider">Stay Connected</h3>
+                                <p className="text-xs text-slate-500">
+                                    Join our community to get the latest updates on voting and events.
+                                </p>
+                                <div className="flex items-center gap-4">
+                                    {[
+                                        { icon: Facebook, label: 'Facebook', href: '#' },
+                                        { icon: Twitter, label: 'Twitter', href: '#' },
+                                        { icon: Instagram, label: 'Instagram', href: '#' },
+                                        { icon: Youtube, label: 'Youtube', href: '#' }
+                                    ].map(({ icon: Icon, label, href }) => (
+                                        <a
+                                            key={label}
+                                            href={href}
+                                            className="w-10 h-10 rounded-full bg-slate-800 hover:bg-amber-500 hover:text-white flex items-center justify-center transition-all duration-300 border border-slate-700 hover:border-amber-500 group"
+                                            aria-label={label}
+                                        >
+                                            <Icon className="w-5 h-5" />
+                                        </a>
+                                    ))}
+                                </div>
                             </div>
                         </div>
 
-                        <p className="text-slate-400 text-sm max-w-md mb-8 leading-relaxed">
-                            "Rooted in Tradition, Rising in Rhythm." <br />
-                            Join us in honoring the best musical talents across the region.
-                        </p>
+                        <div className="w-full h-px bg-slate-800/50 mt-12 mb-8" />
 
-                        <div className="w-full h-px bg-slate-800 max-w-xs mb-8" />
-
-                        <p className="text-slate-600 text-xs">
-                            © {new Date().getFullYear()} Kalenjin Music Festival. All rights reserved.
-                        </p>
+                        <div className="flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-slate-500">
+                            <p>© {new Date().getFullYear()} Kalenjin Music Festival. All rights reserved.</p>
+                            <div className="flex items-center gap-6">
+                                <a href="#" className="hover:text-amber-500 transition-colors">Privacy Policy</a>
+                                <a href="#" className="hover:text-amber-500 transition-colors">Terms of Service</a>
+                            </div>
+                        </div>
                     </div>
                 </footer>
             </main>
