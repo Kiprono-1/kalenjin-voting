@@ -107,6 +107,16 @@ export default function Layout({ children, currentPageName }) {
                                 </Button>
                             </Link>
 
+                            <Link to={createPageUrl('Results')} className="hidden sm:block">
+                                <Button
+                                    className="bg-red-600 hover:bg-red-700 text-white font-bold shadow-lg shadow-red-200"
+                                    size="sm"
+                                >
+                                    <BarChart3 className="w-4 h-4 mr-2" />
+                                    LIVE RESULTS
+                                </Button>
+                            </Link>
+
                             {currentUser ? (
                                 <DropdownMenu>
                                     <DropdownMenuTrigger asChild>

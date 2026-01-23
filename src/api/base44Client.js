@@ -63,58 +63,30 @@ export const base44 = {
         },
         me: async () => {
             try {
-                // 1. Check if Supabase is actually configured
-                const url = import.meta.env.VITE_SUPABASE_URL;
-                const isRealClient = url && !url.includes('YOUR_SUPABASE');
-
                 const { data: { user }, error: authError } = await supabase.auth.getUser();
 
                 if (authError || !user) {
-                    console.log('Auth Check: No active session found.');
                     throw new Error('Not authenticated');
                 }
 
-                console.log('Auth Check: User found', {
-                    id: user.id,
-                    email: user.email,
-                    isRealSupabase: isRealClient
-                });
-
-                // 2. Fetch profile with detailed error reporting
+                // 2. Fetch profile
                 const { data: profile, error: profileError } = await supabase
                     .from('profiles')
                     .select('*')
                     .eq('id', user.id)
                     .single();
 
-                if (profileError) {
-                    console.error('Profile Red Alert 🚨:', {
-                        code: profileError.code,
-                        message: profileError.message,
-                        details: profileError.details,
-                        hint: 'This usually means RLS is blocking you or the row is missing.'
-                    });
-                }
-
-                if (!profile) {
-                    console.warn('Profile Warning ⚠️: No entry found in "profiles" table for this user ID.');
+                if (profileError || !profile) {
                     throw new Error('USER_NOT_REGISTERED');
                 }
 
-                const userData = {
+                return {
                     ...user,
                     role: profile?.role || 'voter',
                     name: profile?.name || user.email.split('@')[0]
                 };
-
-                console.table({
-                    "Attribute": ["Role", "Profile Found", "Name", "Supabase URL"],
-                    "Value": [userData.role, !!profile, userData.name, url?.substring(0, 20) + '...']
-                });
-
-                return userData;
             } catch (err) {
-                console.error('Critical Auth Error:', err.message);
+                console.error('Auth Error:', err.message);
                 throw err;
             }
         },

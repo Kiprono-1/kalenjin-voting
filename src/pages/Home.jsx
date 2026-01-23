@@ -186,7 +186,15 @@ export default function Home() {
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
           <div className="lg:col-span-3">
             <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
-              <h2 className="text-3xl font-black text-slate-900 uppercase tracking-tight">Cast Your Vote</h2>
+              <div className="flex items-center gap-4">
+                <h2 className="text-3xl font-black text-slate-900 uppercase tracking-tight">Cast Your Vote</h2>
+                <Link to={createPageUrl('Results')}>
+                  <Button variant="outline" size="sm" className="border-red-600 text-red-600 hover:bg-red-50 font-bold rounded-full px-4 border-2">
+                    <TrendingUp className="w-4 h-4 mr-2" />
+                    LIVE STATS
+                  </Button>
+                </Link>
+              </div>
               <CategoryTabs
                 activeCategory={activeCategory}
                 onCategoryChange={setActiveCategory}
