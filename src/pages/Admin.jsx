@@ -370,7 +370,6 @@ export default function Admin() {
                         <TableRow>
                           <TableHead>Artist</TableHead>
                           <TableHead>Details</TableHead>
-                          <TableHead>Bio</TableHead>
                           <TableHead className="text-right">Actions</TableHead>
                         </TableRow>
                       </TableHeader>
@@ -397,9 +396,7 @@ export default function Admin() {
                                 <div><span className="font-medium">Song:</span> {app.song_title}</div>
                               </div>
                             </TableCell>
-                            <TableCell className="max-w-xs">
-                              <p className="text-xs text-slate-600 line-clamp-3">{app.bio}</p>
-                            </TableCell>
+
                             <TableCell className="text-right">
                               <div className="flex justify-end gap-2">
                                 <Button

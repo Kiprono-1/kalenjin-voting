@@ -33,11 +33,11 @@ export const base44 = {
             if (error) throw error;
             return data;
         },
-        verifyOtp: async (email, token) => {
+        verifyOtp: async (email, token, type = 'email') => {
             const { data, error } = await supabase.auth.verifyOtp({
                 email,
                 token,
-                type: 'email' // 'email' is used for the 6-digit numeric codes
+                type // 'email' for login, 'recovery' for password reset
             });
             if (error) throw error;
             return data.user;
@@ -107,7 +107,7 @@ export const base44 = {
                 redirectTo: `${window.location.origin}/login?type=recovery`,
             });
             if (error) throw error;
-            return data;
+            return { otpSent: true, ...data };
         },
         listUsers: async () => {
             const { data, error } = await supabase
@@ -164,7 +164,6 @@ export const base44 = {
                         name: artistData.name,
                         real_name: artistData.real_name,
                         gender: artistData.gender,
-                        bio: artistData.bio,
                         song_title: artistData.song_title,
                         region: artistData.region,
                         image_url: artistData.image_url,

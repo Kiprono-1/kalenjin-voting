@@ -24,6 +24,7 @@ const Login = () => {
   const [loginData, setLoginData] = useState({ email: '', password: '', otp: '', otpSent: false })
   const [registerData, setRegisterData] = useState({ name: '', email: '', phone: '+254', password: '', confirmPassword: '' })
   const [newPassword, setNewPassword] = useState('')
+  const [resetOtp, setResetOtp] = useState('')
 
   // Step 1: Login with Password OR Request OTP
   const handleLoginInitial = async (e) => {
@@ -86,10 +87,25 @@ const Login = () => {
     setLoading(true)
     try {
       await base44.auth.resetPassword(loginData.email)
-      toast.success("Password reset link sent to your email!")
-      setResetView('login')
+      toast.success("Verification code sent to your email!")
+      setResetView('forgot_otp')
     } catch (err) {
-      toast.error(err.message || "Failed to send reset link")
+      toast.error(err.message || "Failed to send reset code")
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleResetVerify = async (e) => {
+    e.preventDefault()
+    if (!resetOtp) return toast.error("Please enter the 6-digit code")
+    setLoading(true)
+    try {
+      await base44.auth.verifyOtp(loginData.email, resetOtp, 'recovery')
+      toast.success("Identity verified! Set your new password.")
+      setResetView('update')
+    } catch (err) {
+      toast.error(err.message || "Invalid or expired code")
     } finally {
       setLoading(false)
     }
@@ -228,12 +244,41 @@ const Login = () => {
                         Update Password
                       </Button>
                     </form>
+                  ) : resetView === 'forgot_otp' ? (
+                    <form onSubmit={handleResetVerify} className="space-y-4">
+                      <div className="space-y-2 text-center mb-6">
+                        <ShieldCheck className="w-10 h-10 text-red-600 mx-auto mb-2" />
+                        <h3 className="font-bold text-lg">Verify Identity</h3>
+                        <p className="text-sm text-slate-500">Enter the 6-digit code sent to<br /><span className="font-bold text-slate-900">{loginData.email}</span></p>
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="reset-otp">6-Digit Code</Label>
+                        <Input
+                          id="reset-otp"
+                          placeholder="123456"
+                          className="text-center text-2xl tracking-[0.5em] h-14"
+                          maxLength={6}
+                          value={resetOtp}
+                          onChange={e => setResetOtp(e.target.value)}
+                          required
+                        />
+                      </div>
+                      <div className="flex flex-col gap-3">
+                        <Button className="w-full bg-red-600 hover:bg-red-700 h-12" type="submit" disabled={loading}>
+                          {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+                          Verify & Continue
+                        </Button>
+                        <Button variant="ghost" type="button" onClick={() => setResetView('forgot')}>
+                          Resend Code
+                        </Button>
+                      </div>
+                    </form>
                   ) : resetView === 'forgot' ? (
                     <form onSubmit={handleForgotPassword} className="space-y-4">
                       <div className="space-y-2 text-center mb-6">
                         <Lock className="w-10 h-10 text-red-600 mx-auto mb-2" />
                         <h3 className="font-bold text-lg">Reset Password</h3>
-                        <p className="text-sm text-slate-500">Enter your email and we'll send you a link to reset your password.</p>
+                        <p className="text-sm text-slate-500">Enter your email and we'll send you a 6-digit code to reset your password.</p>
                       </div>
                       <div className="space-y-2">
                         <Label htmlFor="reset-email">Email Address</Label>
@@ -247,9 +292,9 @@ const Login = () => {
                         />
                       </div>
                       <div className="flex flex-col gap-3">
-                        <Button className="w-full bg-red-600 hover:bg-red-700" type="submit" disabled={loading}>
+                        <Button className="w-full bg-red-600 hover:bg-red-700 h-12" type="submit" disabled={loading}>
                           {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
-                          Send Reset Link
+                          Send Reset Code
                         </Button>
                         <Button variant="ghost" type="button" onClick={() => setResetView('login')}>
                           Back to Login
@@ -322,7 +367,19 @@ const Login = () => {
                           {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
                           Sign In
                         </Button>
-                        <div className="relative">
+
+                        <p className="text-center text-sm text-slate-600 mt-2">
+                          Don't have an account?{" "}
+                          <button
+                            type="button"
+                            onClick={() => setActiveTab('register')}
+                            className="text-red-600 font-bold hover:underline"
+                          >
+                            Register Here
+                          </button>
+                        </p>
+
+                        <div className="relative mt-4">
                           <div className="absolute inset-0 flex items-center"><span className="w-full border-t" /></div>
                           <div className="relative flex justify-center text-xs uppercase"><span className="bg-white px-2 text-muted-foreground">Or</span></div>
                         </div>
@@ -332,7 +389,7 @@ const Login = () => {
                           onClick={handleSendOtp}
                           disabled={loading || !loginData.email}
                         >
-                          Email 6-digit Code (OTP)
+                          Email 6-digit Code (OTP Login)
                         </Button>
                       </div>
                     </form>

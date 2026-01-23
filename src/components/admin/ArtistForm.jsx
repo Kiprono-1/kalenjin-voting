@@ -21,7 +21,6 @@ export default function ArtistForm({ artist, categories = [], onSave, onCancel, 
         name: '',
         real_name: '',
         song_title: '',
-        bio: '',
         category: categories[0]?.value || '',
         region: '',
         image_url: '',
@@ -220,15 +219,7 @@ export default function ArtistForm({ artist, categories = [], onSave, onCancel, 
                         </div>
                     </div>
 
-                    <div className="space-y-2">
-                        <Label htmlFor="bio">Bio</Label>
-                        <Textarea
-                            id="bio"
-                            value={formData.bio}
-                            onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
-                            rows={3}
-                        />
-                    </div>
+
 
                     <div className="flex gap-2 justify-end">
                         <Button type="button" variant="outline" onClick={onCancel}>

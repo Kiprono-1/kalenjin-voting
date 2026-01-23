@@ -24,7 +24,6 @@ export default function Apply() {
         name: '',
         real_name: '',
         song_title: '',
-        bio: '',
         category: '',
         region: '',
         image_url: '',
@@ -312,17 +311,7 @@ export default function Apply() {
                                 </div>
                             </div>
 
-                            <div className="space-y-3">
-                                <Label htmlFor="bio" className="text-slate-700 font-bold ml-1">Artist Bio (Max 200 words) *</Label>
-                                <Textarea
-                                    id="bio"
-                                    placeholder="Tell us about your musical journey..."
-                                    className="min-h-[150px] rounded-3xl border-slate-200 p-5"
-                                    value={formData.bio}
-                                    onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
-                                    required
-                                />
-                            </div>
+
 
                             <Button
                                 type="submit"
