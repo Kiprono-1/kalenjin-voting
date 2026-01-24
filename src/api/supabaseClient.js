@@ -11,18 +11,18 @@ if (isConfigValid) {
     try {
         supabaseInstance = createClient(supabaseUrl, supabaseAnonKey);
     } catch (e) {
-        console.error('Failed to initialize Supabase:', e);
+        console.error('Failed to initialize DB:', e);
     }
 } else {
-    console.warn('Supabase credentials missing or invalid. Please update your .env file with live credentials.');
+    console.warn('DB credentials missing or invalid.V');
 }
 
 // Export a safety proxy to prevent crashing if config is missing
 // This allows the app to load and show "Connection Error" instead of white-screening
 const createMockChain = () => {
     const fn = () => fn;
-    fn.then = (cb) => cb({ data: null, error: new Error('Supabase not configured') });
-    fn.catch = (cb) => cb(new Error('Supabase not configured'));
+    fn.then = (cb) => cb({ data: null, error: new Error('DB not configured') });
+    fn.catch = (cb) => cb(new Error('DB not configured'));
     fn.single = () => fn;
     fn.select = () => fn;
     fn.from = () => fn;
@@ -33,7 +33,7 @@ const createMockChain = () => {
     fn.update = () => fn;
     fn.delete = () => fn;
     fn.neq = () => fn;
-    fn.upload = () => Promise.reject(new Error('Supabase not configured'));
+    fn.upload = () => Promise.reject(new Error('DB not configured'));
     fn.getPublicUrl = () => ({ data: { publicUrl: null } });
     return fn;
 };
@@ -43,15 +43,15 @@ export const supabase = supabaseInstance || new Proxy({}, {
         if (prop === 'auth') {
             return {
                 getUser: () => Promise.resolve({ data: { user: null }, error: null }),
-                signInWithPassword: () => Promise.reject(new Error('Supabase not configured')),
-                signInWithOAuth: () => Promise.reject(new Error('Supabase not configured')),
-                signInWithOtp: () => Promise.reject(new Error('Supabase not configured')),
-                verifyOtp: () => Promise.reject(new Error('Supabase not configured')),
-                signUp: () => Promise.reject(new Error('Supabase not configured')),
+                signInWithPassword: () => Promise.reject(new Error('DB not configured')),
+                signInWithOAuth: () => Promise.reject(new Error('DB not configured')),
+                signInWithOtp: () => Promise.reject(new Error('DB not configured')),
+                verifyOtp: () => Promise.reject(new Error('DB not configured')),
+                signUp: () => Promise.reject(new Error('DB not configured')),
                 signOut: () => Promise.resolve({ error: null }),
                 onAuthStateChange: () => ({ data: { subscription: { unsubscribe: () => { } } } }),
-                resetPasswordForEmail: () => Promise.reject(new Error('Supabase not configured')),
-                updateUser: () => Promise.reject(new Error('Supabase not configured')),
+                resetPasswordForEmail: () => Promise.reject(new Error('DB not configured')),
+                updateUser: () => Promise.reject(new Error('DB not configured')),
             };
         }
         if (prop === 'storage') {

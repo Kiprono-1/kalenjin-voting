@@ -250,7 +250,7 @@ export const base44 = {
 
                     return stats;
                 } catch (error) {
-                    console.error("Failed to fetch Supabase vote stats:", error);
+                    console.error("Failed to fetch vote stats:", error);
                     return {};
                 }
             },
@@ -271,7 +271,7 @@ export const base44 = {
                         category_id: v.categories?.name || v.category_id
                     }));
                 } catch (error) {
-                    console.error("Failed to fetch my Supabase votes:", error);
+                    console.error("Failed to fetch  votes:", error);
                     return [];
                 }
             },
