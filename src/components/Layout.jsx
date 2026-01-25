@@ -72,7 +72,7 @@ export default function Layout({ children, currentPageName }) {
 
                         {/* Desktop Navigation */}
                         <div className="hidden lg:flex items-center gap-1">
-                            {navItems.map(({ name, label, path }) => (
+                            {navItems.filter(item => item.name !== 'Apply' || currentUser).map(({ name, label, path }) => (
                                 <Link key={name} to={createPageUrl(path)}>
                                     <Button
                                         variant="ghost"
@@ -182,7 +182,7 @@ export default function Layout({ children, currentPageName }) {
                     {mobileMenuOpen && (
                         <div className="lg:hidden py-4 border-t border-slate-100 bg-white absolute top-16 left-0 right-0 shadow-lg px-4 z-50 animate-in slide-in-from-top-2">
                             <div className="flex flex-col gap-2">
-                                {navItems.map(({ name, label, path }) => (
+                                {navItems.filter(item => item.name !== 'Apply' || currentUser).map(({ name, label, path }) => (
                                     <Link key={name} to={createPageUrl(path)} onClick={() => setMobileMenuOpen(false)}>
                                         <Button
                                             variant="ghost"
@@ -261,7 +261,7 @@ export default function Layout({ children, currentPageName }) {
                                         { label: 'Foundation', path: 'Foundation' },
                                         { label: 'Apply Now', path: 'Apply' },
                                         { label: 'Live Results', path: 'Results' },
-                                    ].map((link) => (
+                                    ].filter(link => link.path !== 'Apply' || currentUser).map((link) => (
                                         <li key={link.path}>
                                             <Link
                                                 to={createPageUrl(link.path)}
@@ -329,8 +329,8 @@ export default function Layout({ children, currentPageName }) {
                         <div className="flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-slate-500">
                             <p>© {new Date().getFullYear()} Kalenjin Music Festival. All rights reserved.</p>
                             <div className="flex items-center gap-6">
-                                <a href="#" className="hover:text-amber-500 transition-colors">Privacy Policy</a>
-                                <a href="#" className="hover:text-amber-500 transition-colors">Terms of Service</a>
+                                <Link to={createPageUrl('Privacy')} className="hover:text-amber-500 transition-colors">Privacy Policy</Link>
+                                <Link to={createPageUrl('Terms')} className="hover:text-amber-500 transition-colors">Terms of Service</Link>
                             </div>
                         </div>
                     </div>
