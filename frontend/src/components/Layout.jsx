@@ -39,6 +39,7 @@ export default function Layout({ children, currentPageName }) {
 
     const navItems = [
         { name: 'Home', label: 'HOME', path: 'Home' },
+        { name: 'Results', label: 'RESULTS', path: 'Results' },
         { name: 'About', label: 'ABOUT KMF', path: 'About' },
         { name: 'Awards', label: 'AWARDS', path: 'Awards' },
         { name: 'Foundation', label: 'FOUNDATION', path: 'Foundation' },
