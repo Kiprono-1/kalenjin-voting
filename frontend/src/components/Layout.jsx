@@ -213,22 +213,25 @@ export default function Layout({ children, currentPageName }) {
                         </div>
                     </div>
 
+                    {/* Mobile Search Bar - Always visible on mobile */}
+                    <div className="lg:hidden pb-3 -mt-1">
+                        <div className="relative">
+                            <span className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <Search className="w-4 h-4 text-slate-400" />
+                            </span>
+                            <input
+                                type="text"
+                                placeholder="Search nominees..."
+                                className="w-full pl-10 pr-4 py-2.5 bg-slate-100 border-none rounded-full text-sm focus:ring-2 focus:ring-red-500"
+                                value={searchQuery}
+                                onChange={handleSearch}
+                            />
+                        </div>
+                    </div>
+
                     {/* Mobile Navigation */}
                     {mobileMenuOpen && (
-                        <div className="lg:hidden py-4 border-t border-slate-100 bg-white absolute top-16 left-0 right-0 shadow-lg px-4 z-50 animate-in slide-in-from-top-2">
-                            {/* Search Bar - Mobile */}
-                            <div className="mb-4 relative">
-                                <input
-                                    type="text"
-                                    placeholder="Search nominees..."
-                                    className="w-full pl-10 pr-4 py-3 bg-slate-100 border-none rounded-xl text-sm focus:ring-2 focus:ring-red-500"
-                                    value={searchQuery}
-                                    onChange={handleSearch}
-                                />
-                                <span className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                    <Search className="w-4 h-4 text-slate-400" />
-                                </span>
-                            </div>
+                        <div className="lg:hidden py-4 border-t border-slate-100 bg-white absolute top-24 left-0 right-0 shadow-lg px-4 z-50 animate-in slide-in-from-top-2">
                             <div className="flex flex-col gap-2">
                                 {navItems.filter(item => item.name !== 'Apply' || currentUser).map(({ name, label, path }) => (
                                     path.startsWith('/#') ? (
