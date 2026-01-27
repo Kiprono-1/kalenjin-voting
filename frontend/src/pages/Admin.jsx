@@ -4,7 +4,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Plus, Pencil, Trash2, Users, Award, TrendingUp, Loader2, History, FileText, UserCheck } from 'lucide-react';
+import { Plus, Pencil, Trash2, Users, Award, TrendingUp, Loader2, History, FileText, UserCheck, Calendar, Settings } from 'lucide-react';
 import { toast } from 'sonner';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import ArtistForm from '@/components/admin/ArtistForm';
@@ -146,6 +146,39 @@ export default function Admin() {
     queryFn: () => base44.entities.Category.list(),
   });
 
+  const { data: votingConfig, isLoading: settingsLoading } = useQuery({
+    queryKey: ['settings', 'voting_config'],
+    queryFn: () => base44.entities.Settings.get('voting_config'),
+  });
+
+  const saveSettingsMutation = useMutation({
+    mutationFn: (data) => base44.entities.Settings.set('voting_config', data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['settings'] });
+      toast.success('Voting settings saved successfully!');
+    },
+    onError: (err) => toast.error('Failed to save settings: ' + err.message),
+  });
+
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
+
+  useEffect(() => {
+    if (votingConfig) {
+      if (votingConfig.startDate) setStartDate(votingConfig.startDate);
+      if (votingConfig.endDate) setEndDate(votingConfig.endDate);
+    }
+  }, [votingConfig]);
+
+  const handleSaveSettings = (e) => {
+    e.preventDefault();
+    saveSettingsMutation.mutate({
+      startDate,
+      endDate,
+      isActive: true
+    });
+  };
+
   const categoryMap = React.useMemo(() => {
     const map = {};
     categories.forEach(cat => map[cat.id] = cat.name);
@@ -254,6 +287,10 @@ export default function Admin() {
             <TabsTrigger value="logs" className="data-[state=active]:bg-red-50 data-[state=active]:text-red-600">
               <History className="w-4 h-4 mr-2" />
               Voting Logs
+            </TabsTrigger>
+            <TabsTrigger value="settings" className="data-[state=active]:bg-red-50 data-[state=active]:text-red-600">
+              <Settings className="w-4 h-4 mr-2" />
+              Settings
             </TabsTrigger>
           </TabsList>
 
@@ -544,6 +581,69 @@ export default function Admin() {
                     </Table>
                   </div>
                 )}
+              </CardContent>
+            </Card>
+          </TabsContent>
+          <TabsContent value="settings">
+            <Card>
+              <CardHeader>
+                <CardTitle>Voting Configuration</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <form onSubmit={handleSaveSettings} className="space-y-6 max-w-lg">
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium">Voting Start Date & Time</label>
+                    <div className="flex items-center gap-2">
+                      <Calendar className="w-4 h-4 text-slate-500" />
+                      <input
+                        type="datetime-local"
+                        className="flex-1 p-2 border rounded-md"
+                        value={startDate}
+                        onChange={(e) => setStartDate(e.target.value)}
+                        required
+                      />
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium">Voting End Date & Time</label>
+                    <div className="flex items-center gap-2">
+                      <Calendar className="w-4 h-4 text-slate-500" />
+                      <input
+                        type="datetime-local"
+                        className="flex-1 p-2 border rounded-md"
+                        value={endDate}
+                        onChange={(e) => setEndDate(e.target.value)}
+                        required
+                      />
+                    </div>
+                  </div>
+
+                  <div className="pt-4">
+                    <Button
+                      type="submit"
+                      className="bg-red-600 hover:bg-red-700"
+                      disabled={saveSettingsMutation.isPending}
+                    >
+                      {saveSettingsMutation.isPending ? (
+                        <>
+                          <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                          Saving...
+                        </>
+                      ) : (
+                        'Save Configuration'
+                      )}
+                    </Button>
+                  </div>
+                </form>
+
+                <div className="mt-8 p-4 bg-amber-50 rounded-lg text-sm text-amber-800 border border-amber-200">
+                  <p className="font-semibold mb-1">Note:</p>
+                  <ul className="list-disc pl-5 space-y-1">
+                    <li>Voting will automatically open and close based on these times.</li>
+                    <li>Users will see a countdown if voting hasn't started.</li>
+                  </ul>
+                </div>
               </CardContent>
             </Card>
           </TabsContent>

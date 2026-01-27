@@ -364,6 +364,28 @@ export const base44 = {
 
                 return publicUrl;
             }
+        },
+        Settings: {
+            get: async (key) => {
+                const { data, error } = await supabase
+                    .from('settings')
+                    .select('value')
+                    .eq('key', key)
+                    .maybeSingle();
+
+                if (error) throw error;
+                return data?.value;
+            },
+            set: async (key, value) => {
+                const { data, error } = await supabase
+                    .from('settings')
+                    .upsert({ key, value })
+                    .select()
+                    .single();
+
+                if (error) throw error;
+                return data;
+            }
         }
     }
 };

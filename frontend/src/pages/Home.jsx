@@ -24,8 +24,13 @@ export default function Home() {
   const [searchQuery, setSearchQuery] = useState(new URLSearchParams(window.location.search).get('search') || '');
   const queryClient = useQueryClient();
 
-  const START_DATE = "2026-01-23T08:00:00+03:00";
-  const END_DATE = "2026-02-15T23:59:59+03:00";
+  const { data: votingConfig } = useQuery({
+    queryKey: ['settings', 'voting_config'],
+    queryFn: () => base44.entities.Settings.get('voting_config'),
+  });
+
+  const START_DATE = votingConfig?.startDate || "2026-01-23T08:00:00+03:00";
+  const END_DATE = votingConfig?.endDate || "2026-02-15T23:59:59+03:00";
 
   useEffect(() => {
     base44.auth.me()
@@ -68,7 +73,7 @@ export default function Home() {
       clearInterval(interval);
       window.removeEventListener('searchUpdate', handleSearchUpdate);
     };
-  }, []);
+  }, [START_DATE, END_DATE]);
 
   const { data: artists = [], isLoading: artistsLoading } = useQuery({
     queryKey: ['artists', 'approved'],
