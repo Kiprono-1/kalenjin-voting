@@ -111,7 +111,7 @@ export default function Home() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['results'] });
       queryClient.invalidateQueries({ queryKey: ['myVotes'] });
-      toast.success('Vote cast successfully! 🎉');
+      toast.success('Vote cast successfully!');
     },
     onError: (err, voteData) => {
       // Rollback: This would require more complex cache management
