@@ -270,13 +270,13 @@ export default function Results() {
                   </div>
 
                   {/* Progress Meter Background */}
-                  <div className="absolute inset-0 z-0 bg-slate-50 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity overflow-hidden">
+                  <div className="absolute inset-0 z-0 bg-slate-50 rounded-2xl overflow-hidden">
                     <motion.div
                       initial={{ width: 0 }}
                       whileInView={{ width: `${percentage}%` }}
                       viewport={{ once: true }}
-                      transition={{ duration: 1.2, ease: "circOut" }}
-                      className={`h-full bg-gradient-to-r ${style.accent} opacity-5`}
+                      transition={{ duration: 1.5, ease: "easeOut" }}
+                      className={`h-full bg-gradient-to-r ${style.accent} opacity-20`}
                     />
                   </div>
                 </div>
