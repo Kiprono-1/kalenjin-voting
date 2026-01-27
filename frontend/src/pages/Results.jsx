@@ -1,10 +1,10 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { base44 } from '@/api/base44Client';
 import { useQuery } from '@tanstack/react-query';
 import { Card, CardContent } from "@/components/ui/card";
 import {
   Trophy, Medal, Award, Loader2, Crown, Star, Music, Users,
-  TrendingUp, MapPin, Sparkles, ChevronRight, Music2, Cross
+  TrendingUp, MapPin, Sparkles, ChevronRight, Music2, Cross, Search
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
@@ -131,6 +131,8 @@ const Podium = ({ topArtists }) => {
 };
 
 export default function Results() {
+  const [searchQuery, setSearchQuery] = useState('');
+
   const { data: artists = [], isLoading: artistsLoading } = useQuery({
     queryKey: ['artists', 'approved'],
     queryFn: () => base44.entities.Artist.list('approved'),
@@ -193,6 +195,7 @@ export default function Results() {
     const catResults = (resultsData && resultsData[catName]) || [];
     const allResults = artists
       .filter(a => a && a.category === catName)
+      .filter(a => !searchQuery || a.name.toLowerCase().includes(searchQuery.toLowerCase()))
       .map(a => {
         const result = Array.isArray(catResults) ? catResults.find(r => r && r.artistId === a.id) : null;
         return { ...a, voteCount: result ? result.voteCount : 0 };
@@ -296,6 +299,32 @@ export default function Results() {
         }
         subtitle="Tracking the cinematic rhythm of the rift. Real-time validated voting data."
       />
+
+      {/* Sticky Search Bar */}
+      <div className="sticky top-16 md:top-20 z-40 bg-white/95 backdrop-blur-md border-b border-slate-100 shadow-sm">
+        <div className="max-w-7xl mx-auto px-4 py-3">
+          <div className="relative max-w-md mx-auto">
+            <span className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+              <Search className="w-5 h-5 text-slate-400" />
+            </span>
+            <input
+              type="text"
+              placeholder="Search artists..."
+              className="w-full pl-12 pr-4 py-3 bg-slate-100 border-none rounded-full text-sm focus:ring-2 focus:ring-red-500 font-medium"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+            {searchQuery && (
+              <button
+                onClick={() => setSearchQuery('')}
+                className="absolute inset-y-0 right-0 pr-4 flex items-center text-slate-400 hover:text-slate-600"
+              >
+                ✕
+              </button>
+            )}
+          </div>
+        </div>
+      </div>
 
       <div className="max-w-7xl mx-auto px-6 relative z-10">
         <div className="mb-24 text-center -mt-16 bg-white rounded-[4rem] p-12 border border-slate-100 shadow-2xl">
