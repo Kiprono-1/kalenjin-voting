@@ -325,6 +325,28 @@ export const base44 = {
                     user_name: v.profiles?.name
                 }));
             },
+            getLogs: async (page = 1, pageSize = 20) => {
+                const from = (page - 1) * pageSize;
+                const to = from + pageSize - 1;
+
+                const { data, error, count } = await supabase
+                    .from('votes')
+                    .select('*, categories(name), artists(name), profiles:user_id(email, name)', { count: 'exact' })
+                    .order('created_at', { ascending: false })
+                    .range(from, to);
+
+                if (error) throw error;
+
+                const logs = data.map(v => ({
+                    ...v,
+                    category_name: v.categories?.name,
+                    artist_name: v.artists?.name,
+                    user_email: v.profiles?.email,
+                    user_name: v.profiles?.name
+                }));
+
+                return { logs, count };
+            },
             deleteAll: async () => {
                 const { error } = await supabase
                     .from('votes')

@@ -4,7 +4,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Plus, Pencil, Trash2, Users, Award, TrendingUp, Loader2, History, FileText, UserCheck, Calendar, Settings } from 'lucide-react';
+import { Plus, Pencil, Trash2, Users, Award, TrendingUp, Loader2, History, FileText, UserCheck, Calendar, Settings, ChevronLeft, ChevronRight } from 'lucide-react';
 import { toast } from 'sonner';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import ArtistForm from '@/components/admin/ArtistForm';
@@ -41,10 +41,40 @@ export default function Admin() {
     queryFn: () => base44.entities.Artist.list('pending'),
   });
 
-  const { data: votes = [], isLoading: votesLoading } = useQuery({
-    queryKey: ['votes-detailed'],
-    queryFn: () => base44.entities.Vote.list(),
+  // Pagination State for Logs
+  const [logPage, setLogPage] = useState(1);
+  const LOG_PAGE_SIZE = 20;
+
+  const { data: logsData, isLoading: logsLoading } = useQuery({
+    queryKey: ['logs', logPage],
+    queryFn: () => base44.entities.Vote.getLogs(logPage, LOG_PAGE_SIZE),
+    keepPreviousData: true
   });
+
+  const logs = logsData?.logs || [];
+  const totalLogs = logsData?.count || 0;
+  const totalLogPages = Math.ceil(totalLogs / LOG_PAGE_SIZE);
+
+  // Aggregated Stats for Dashboard
+  const { data: voteStats = {}, isLoading: statsLoading } = useQuery({
+    queryKey: ['vote-stats'],
+    queryFn: () => base44.entities.Vote.getStats(),
+  });
+
+  const totalVotes = React.useMemo(() => {
+    if (!voteStats) return 0;
+    return Object.values(voteStats).flat().reduce((acc, curr) => acc + (curr?.voteCount || 0), 0);
+  }, [voteStats]);
+
+  const artistVoteMap = React.useMemo(() => {
+    const map = {};
+    if (voteStats) {
+      Object.values(voteStats).flat().forEach(v => {
+        if (v && v.artistId) map[v.artistId] = v.voteCount;
+      });
+    }
+    return map;
+  }, [voteStats]);
 
   const { data: users = [], isLoading: usersLoading } = useQuery({
     queryKey: ['users'],
@@ -107,7 +137,8 @@ export default function Admin() {
   const resetVotesMutation = useMutation({
     mutationFn: () => base44.entities.Vote.deleteAll(),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['votes-detailed'] });
+      queryClient.invalidateQueries({ queryKey: ['vote-stats'] });
+      queryClient.invalidateQueries({ queryKey: ['logs'] });
       queryClient.invalidateQueries({ queryKey: ['artists'] }); // Re-fetch artists to update vote counts
       toast.success('All votes have been reset successfully!');
     },
@@ -193,7 +224,7 @@ export default function Admin() {
     );
   }
 
-  const isLoading = artistsLoading || votesLoading || usersLoading;
+  const isLoading = artistsLoading || statsLoading || usersLoading;
 
   return (
     <div className="min-h-screen bg-slate-50 py-8">
@@ -241,13 +272,13 @@ export default function Admin() {
               <Award className="w-4 h-4 text-slate-400" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold mb-2">{votes.length}</div>
+              <div className="text-2xl font-bold mb-2">{totalVotes.toLocaleString()}</div>
               <Button
                 variant="destructive"
                 size="sm"
                 className="w-full text-xs"
                 onClick={handleResetVotes}
-                disabled={resetVotesMutation.isPending || votes.length === 0}
+                disabled={resetVotesMutation.isPending || totalVotes === 0}
               >
                 {resetVotesMutation.isPending ? 'Resetting...' : 'Reset All Votes'}
               </Button>
@@ -358,7 +389,7 @@ export default function Admin() {
                             <TableCell>{artist.region || '-'}</TableCell>
                             <TableCell>
                               <span className="font-bold text-red-600">
-                                {votes.filter(v => v.artist_id === artist.id).length}
+                                {(artistVoteMap[artist.id] || 0).toLocaleString()}
                               </span>
                             </TableCell>
                             <TableCell className="text-right">
@@ -531,54 +562,90 @@ export default function Admin() {
 
           <TabsContent value="logs">
             <Card>
-              <CardHeader>
+              <CardHeader className="flex flex-row items-center justify-between">
                 <CardTitle>Voting Audit Trail</CardTitle>
+                <div className="text-xs text-slate-500 font-medium bg-slate-100 px-2 py-1 rounded-md">
+                  Total Logs: {totalLogs.toLocaleString()}
+                </div>
               </CardHeader>
               <CardContent>
-                {votesLoading ? (
+                {logsLoading ? (
                   <div className="flex items-center justify-center py-12">
                     <Loader2 className="w-8 h-8 animate-spin text-red-600" />
                   </div>
                 ) : (
-                  <div className="overflow-x-auto">
-                    <Table>
-                      <TableHeader>
-                        <TableRow>
-                          <TableHead>Time</TableHead>
-                          <TableHead>Voter</TableHead>
-                          <TableHead>Artist</TableHead>
-                          <TableHead>Category</TableHead>
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        {votes.map((vote) => (
-                          <TableRow key={vote.id}>
-                            <TableCell className="text-xs text-slate-500">
-                              {new Date(vote.created_at).toLocaleString()}
-                            </TableCell>
-                            <TableCell>
-                              <div className="flex flex-col">
-                                <span className="font-medium">{vote.user_name || 'Anonymous'}</span>
-                                <span className="text-xs text-slate-400">{vote.user_email}</span>
-                              </div>
-                            </TableCell>
-                            <TableCell className="font-medium text-red-600">
-                              {vote.artist_name}
-                            </TableCell>
-                            <TableCell className="text-sm">
-                              {vote.category_name}
-                            </TableCell>
+                  <div className="space-y-4">
+                    <div className="overflow-x-auto border rounded-md">
+                      <Table>
+                        <TableHeader>
+                          <TableRow className="bg-slate-50 hover:bg-slate-50">
+                            <TableHead className="w-[180px]">Time</TableHead>
+                            <TableHead>Voter</TableHead>
+                            <TableHead>Artist</TableHead>
+                            <TableHead>Category</TableHead>
                           </TableRow>
-                        ))}
-                        {votes.length === 0 && (
-                          <TableRow>
-                            <TableCell colSpan={4} className="text-center py-12 text-slate-500">
-                              No activity logged yet.
-                            </TableCell>
-                          </TableRow>
-                        )}
-                      </TableBody>
-                    </Table>
+                        </TableHeader>
+                        <TableBody>
+                          {logs.map((vote) => (
+                            <TableRow key={vote.id}>
+                              <TableCell className="text-xs text-slate-500 font-medium">
+                                {new Date(vote.created_at).toLocaleString()}
+                              </TableCell>
+                              <TableCell>
+                                <div className="flex flex-col">
+                                  <span className="font-medium text-sm">{vote.user_name || 'Anonymous'}</span>
+                                  <span className="text-[10px] text-slate-400">{vote.user_email}</span>
+                                </div>
+                              </TableCell>
+                              <TableCell>
+                                <span className="font-semibold text-red-600 text-sm">{vote.artist_name}</span>
+                              </TableCell>
+                              <TableCell className="text-xs text-slate-600">
+                                {vote.category_name}
+                              </TableCell>
+                            </TableRow>
+                          ))}
+                          {logs.length === 0 && (
+                            <TableRow>
+                              <TableCell colSpan={4} className="text-center py-12 text-slate-500">
+                                No activity logged yet.
+                              </TableCell>
+                            </TableRow>
+                          )}
+                        </TableBody>
+                      </Table>
+                    </div>
+
+                    {/* Pagination Controls */}
+                    {totalLogPages > 1 && (
+                      <div className="flex items-center justify-between pt-2 border-t mt-4">
+                        <div className="text-xs text-slate-500 font-medium">
+                          Showing page {logPage} of {totalLogPages}
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => setLogPage(p => Math.max(1, p - 1))}
+                            disabled={logPage === 1 || logsLoading}
+                            className="h-8 w-8"
+                          >
+                            <ChevronLeft className="h-4 w-4" />
+                            <span className="sr-only">Previous</span>
+                          </Button>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => setLogPage(p => Math.min(totalLogPages, p + 1))}
+                            disabled={logPage === totalLogPages || logsLoading}
+                            className="h-8 w-8"
+                          >
+                            <ChevronRight className="h-4 w-4" />
+                            <span className="sr-only">Next</span>
+                          </Button>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 )}
               </CardContent>
